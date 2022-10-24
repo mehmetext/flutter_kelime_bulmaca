@@ -2,6 +2,7 @@ import 'dart:math';
 
 import "package:flutter/material.dart";
 import 'package:flutter_kelime_bulmaca/utils/constants.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:virtual_keyboard_2/virtual_keyboard_2.dart';
 
 class HomeView extends StatefulWidget {
@@ -12,22 +13,23 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  late int random;
   late String word;
   TextEditingController textController = TextEditingController();
 
   int score = 100;
-  int falseScore = 20;
-  int trueScore = 30;
+  int falseScore = 25;
+  int trueScore = 50;
 
-  List<String> enteredChars = [];
+  bool isFinished = false;
+
+  Set<String> enteredChars = {};
+  Set<String> trueEnteredChars = {};
 
   @override
   void initState() {
     super.initState();
 
-    random = Random().nextInt(Constants.words.length);
-    word = Constants.words[random];
+    selectRandomWord();
 
     textController.addListener(() {
       if (textController.text.isNotEmpty) {
@@ -45,12 +47,59 @@ class _HomeViewState extends State<HomeView> {
 
       if (word.toUpperCase().toLowerCase().contains(char)) {
         score += trueScore;
+        trueEnteredChars.add(char);
       } else {
         score -= falseScore;
       }
-    }
 
-    setState(() {});
+      setState(() {});
+
+      Set<String> charsInSelectedWord = word.split("").toSet();
+
+      if (charsInSelectedWord.length == trueEnteredChars.length) {
+        finishGame();
+      }
+    } else {
+      showToast("Bu harfi zaten kullandınız!");
+    }
+  }
+
+  void showToast(String msg) {
+    Fluttertoast.showToast(msg: msg, toastLength: Toast.LENGTH_LONG);
+  }
+
+  void finishGame() {
+    setState(() {
+      isFinished = true;
+    });
+
+    showDialog(
+      context: context,
+      builder: (context) => WillPopScope(
+        onWillPop: () async {
+          return false;
+        },
+        child: gameOverDialogWidget,
+      ),
+    );
+  }
+
+  void selectRandomWord() {
+    int random = Random().nextInt(Constants.words.length);
+    word = Constants.words[random];
+  }
+
+  void playAgain() {
+    setState(() {
+      score = 100;
+      isFinished = false;
+      enteredChars = {};
+      trueEnteredChars = {};
+
+      selectRandomWord();
+    });
+
+    Navigator.pop(context);
   }
 
   @override
@@ -74,6 +123,22 @@ class _HomeViewState extends State<HomeView> {
             ),
           ),
           keyboardWidget,
+        ],
+      );
+
+  Widget get gameOverDialogWidget => SimpleDialog(
+        title: Text("Oyun Bitti!"),
+        children: [
+          scoreWidget,
+          ButtonBar(
+            alignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: playAgain,
+                child: Text("Yeniden Oyna"),
+              ),
+            ],
+          ),
         ],
       );
 

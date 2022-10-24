@@ -24,6 +24,10 @@ linter:
   rules:
     # avoid_print: false  # Uncomment to disable the `avoid_print` rule
     # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
-
+    must_be_immutable: false
+    prefer_const_constructors: false
+    prefer_const_literals_to_create_immutables: false
+    non_constant_identifier_names: false
+    depend_on_referenced_packages: false
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

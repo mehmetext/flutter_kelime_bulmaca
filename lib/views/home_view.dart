@@ -25,12 +25,17 @@ class _HomeViewState extends State<HomeView> {
   Set<String> enteredChars = {};
   Set<String> trueEnteredChars = {};
 
+  //Drawer denemesini canlı canlı yapalım.
+  //score, falseScore, trueScore değişkenlerini değiştirelim.
+
+  //Uygulama açıldığında ilk ve yalnızca bir kez çalışan fonksiyondur.
   @override
   void initState() {
     super.initState();
 
     selectRandomWord();
 
+    //Sanal klavyeden tuşa basıldığında tetiklenecek olan fonksiyondur.
     textController.addListener(() {
       if (textController.text.isNotEmpty) {
         control();
@@ -39,12 +44,21 @@ class _HomeViewState extends State<HomeView> {
     });
   }
 
+  //Önceden hazırlanan kelime listesinden rastgele bir kelime seçen fonksiyondur.
+  void selectRandomWord() {
+    int random = Random().nextInt(Constants.words.length);
+    word = Constants.words[random];
+  }
+
+  //Her tuşa basıldığında çalışan fonksiyondur.
   void control() {
+    //.toUpperCase().toLowerCase() sayesinde kontrolü daha sağlıklı yapar.
     String char = textController.text.toUpperCase().toLowerCase();
 
     if (!enteredChars.contains(char)) {
       enteredChars.add(char);
 
+      //Eğer kelime, girilen karaktere sahipse score değişkenine trueScore değerini ekler ve trueEnteredChars değişkenine bu karakteri ekler. Değilse score değişkeninden falseScore değerini çıkarır.
       if (word.toUpperCase().toLowerCase().contains(char)) {
         score += trueScore;
         trueEnteredChars.add(char);
@@ -56,6 +70,7 @@ class _HomeViewState extends State<HomeView> {
 
       Set<String> charsInSelectedWord = word.split("").toSet();
 
+      //Seçilen karakterdeki farklı harflerin sayısı, doğru girilen farklı harflerin sayısına eşitse oyunu bitirir.
       if (charsInSelectedWord.length == trueEnteredChars.length) {
         finishGame();
       }
@@ -65,6 +80,7 @@ class _HomeViewState extends State<HomeView> {
   }
 
   void showToast(String msg) {
+    //Hazır kütüphane kullanarak bu fonksiyon sayesinde ekranda toast mesajı gösterebiliriz.
     Fluttertoast.showToast(msg: msg, toastLength: Toast.LENGTH_LONG);
   }
 
@@ -84,11 +100,7 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  void selectRandomWord() {
-    int random = Random().nextInt(Constants.words.length);
-    word = Constants.words[random];
-  }
-
+  //playAgain fonksiyonu ile değişkenleri sıfırlayarak uygulamayı tekrar başlatırız. selectRandomWord fonksiyonu ile rastgele bir kelime seçiyorduk, onu da kullanıyoruz.
   void playAgain() {
     setState(() {
       score = 100;
@@ -102,6 +114,7 @@ class _HomeViewState extends State<HomeView> {
     Navigator.pop(context);
   }
 
+  //Uygulama hazır olduğunda çalışan fonksiyondur. Uygulama ekranını çizer. State yani durum her güncellendiğinde bu fonksiyon çalışır. Flutter lifecycle diye araştırmayla daha detaylı bilgi edinilebilir.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,6 +140,7 @@ class _HomeViewState extends State<HomeView> {
         ],
       );
 
+  //Ekrana yazı yazdırmak işte bu kadar basittir.
   Widget get communityWidget => Container(
         padding: EdgeInsets.all(10),
         child: Text("Yazılım Geliştirme Topluluğu"),
@@ -208,11 +222,9 @@ class _HomeViewState extends State<HomeView> {
         ),
       );
 
+  //Uygulama içinde klavye kullanabiliyoruz fakat burada herhangi bir yerde input yani bir değer girebileceğimiz kutucuk olmadığı için telefonun klavyesini açamıyoruz. Dolayısıyla sanal bir klavye eklemek zorundayız. Başkalarının geliştirdiği ve herkese açık paylaştığı klavyeyi kütüphane olarak projeye dahil eder ve rahatça kullanabiliriz.
   Widget get keyboardWidget => VirtualKeyboard(
         type: VirtualKeyboardType.Alphanumeric,
         textController: textController,
-        builder: (context, key) {
-          return Container();
-        },
       );
 }

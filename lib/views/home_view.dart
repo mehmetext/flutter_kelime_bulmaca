@@ -16,7 +16,7 @@ class _HomeViewState extends State<HomeView> {
   late String word;
   TextEditingController textController = TextEditingController();
 
-  int score = 100;
+  int score = 200;
   int falseScore = 25;
   int trueScore = 50;
 
@@ -118,12 +118,18 @@ class _HomeViewState extends State<HomeView> {
             child: Column(
               children: [
                 scoreWidget,
-                wordWidget,
+                Expanded(child: wordWidget),
+                communityWidget,
               ],
             ),
           ),
           keyboardWidget,
         ],
+      );
+
+  Widget get communityWidget => Container(
+        padding: EdgeInsets.all(10),
+        child: Text("Yazılım Geliştirme Topluluğu"),
       );
 
   Widget get gameOverDialogWidget => SimpleDialog(

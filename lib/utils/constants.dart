@@ -5,5 +5,13 @@ class Constants {
     "flutter",
     "dart",
     "bug",
+    "etkinlik",
+    "adres",
+    "sorgu",
+    "hata",
+    "bellek",
+    "aritmetik",
+    "geometrik",
+    "sunucu",
   ];
 }
